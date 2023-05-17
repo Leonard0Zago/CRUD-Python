@@ -6,7 +6,6 @@ from time import sleep
 import locale
 locale.setlocale(locale.LC_MONETARY, 'pt_BR')
 locale.setlocale(locale.LC_NUMERIC, 'pt_BR')
-# from IPython import get_ipython
 
 
 def exibir_cabecalho(mensagem):
@@ -19,42 +18,6 @@ def exibir_cabecalho(mensagem):
     id = input('ID (0 para voltar): ')
 
     return id
-
-
-def mostrar_registro(registro):
-    print('\n====================')
-    print('Registro')
-    print('--------')
-    print('ID..:', registro[0])
-    print('Nome:', registro[1])
-    print('Data:', registro[2])
-    print('Salário:', registro[3])
-    print('====================')
-
-
-def tabela_vazia(conexao):
-    cursor = conexao.cursor()
-    cursor.execute('SELECT count(*) FROM funcionarios')
-    resultado = cursor.fetchall()
-    cursor.close()
-
-    # print(resultado)
-
-    return resultado[0][0] == 0
-
-
-def verificar_registro_existe(conexao, id):
-    cursor = conexao.cursor()
-    cursor.execute('SELECT * FROM funcionarios WHERE id=?', (id,))
-    resultado = cursor.fetchone()
-    cursor.close()
-
-    return resultado
-
-
-def pausa():
-    input('\nPressione <ENTER> para continuar')
-
 
 def conectarBanco():
     conexao = None
@@ -78,7 +41,6 @@ def conectarBanco():
 
     return conexao
 
-
 def criar_tabela(conexao):
     cursor = conexao.cursor()
     cursor.execute("""
@@ -93,32 +55,6 @@ def criar_tabela(conexao):
 
     if cursor:
         cursor.close()
-
-
-def listar(conexao):
-    if tabela_vazia(conexao):
-        print('\n*** TABELA VAZIA ***')
-        pausa()
-        return
-
-    print('\n----------------------')
-    print('Listagem dos Registros')
-    print('----------------------\n')
-
-    cursor = conexao.execute('SELECT * from funcionarios')
-    registros = cursor.fetchall()
-
-    for registro in registros:
-        print('ID..:', registro[0])
-        print('Nome:', registro[1])
-        print('Data:', registro[2])
-        print('Salário:', registro[3])
-        print('-----')
-
-    pausa()
-
-    cursor.close()
-
 
 def incluir(conexao):
     id = exibir_cabecalho('inclusão')
@@ -141,7 +77,6 @@ def incluir(conexao):
             cursor.execute(comando)
             conexao.commit()
             cursor.close()
-
 
 def alterar(conexao):
     if tabela_vazia(conexao):
@@ -173,7 +108,6 @@ def alterar(conexao):
             conexao.commit()
             cursor.close()
 
-
 def excluir(conexao):
     if tabela_vazia(conexao):
         print('\n*** TABELA VAZIA ***')
@@ -198,15 +132,183 @@ def excluir(conexao):
             cursor.execute('DELETE FROM funcionarios WHERE id=?', (id,))
             conexao.commit()
             cursor.close()
+            
+def pesquisa(conexao):
+    
+    opcao = 0
+    
+    while opcao != 5:
 
+        print('--------------')
+        print('O que deseja pesquisar?')
+        print('--------------')
+        print('1. Por ID')
+        print('2. Por nome')
+        print('3. Pela data de nascimento')
+        print('4. Pelo salário')
+        print('5. Sair')
+
+        try:
+            opcao = int(input('\nOpção [1-5]: '))
+        except ValueError:
+            opcao <= 0
+        except ValueError:
+            opcao > 5
+
+        if opcao == 1:
+            
+            pesq = input('\nPesquisar: ')
+            
+            cursor = conexao.execute('SELECT * FROM funcionarios WHERE id LIKE ?', (pesq))
+            registros = cursor.fetchall()
+            cursor.close()
+            print(registros)
+            
+        elif opcao == 2:
+            
+            pesq = input('\nPesquisar: ')
+            
+            cursor = conexao.execute('SELECT * FROM funcionarios WHERE nome LIKE ?', (pesq))
+            registros = cursor.fetchall()
+            cursor.close()
+            print(registros)
+            
+        elif opcao == 3:
+            
+            pesq = input('\nPesquisar: ')
+            
+            cursor = conexao.execute('SELECT * FROM funcionarios WHERE data LIKE ?', (pesq))
+            registros = cursor.fetchall()
+            print(registros)
+            
+        elif opcao == 4:
+            
+            pesq = input('\nPesquisar: ')
+            
+            cursor = conexao.execute('SELECT * FROM funcionarios WHERE salario LIKE ?', (pesq))
+            registros = cursor.fetchall()
+            cursor.close()
+            print(registros)
+            
+        elif opcao == 5:
+            break
+
+        print()
+
+    return opcao
+
+
+    pesq = input('\nPesquisar: ')
+    
+    cursor = conexao.execute('SELECT * FROM funcionarios WHERE id LIKE ?', (pesq))
+    registros = cursor.fetchall()
+
+    for registro in registros:
+        print('ID..:', registro[0])
+        print('Nome:', registro[1])
+        print('Data:', registro[2])
+        print('Salário:', registro[3])
+        print('-----')
+
+    pausa()
+
+    cursor.close()
+    cursor = conexao.execute('SELECT * FROM funcionarios WHERE nome LIKE ?', (pesq))
+    registros = cursor.fetchall()
+
+    for registro in registros:
+        print('ID..:', registro[0])
+        print('Nome:', registro[1])
+        print('Data:', registro[2])
+        print('Salário:', registro[3])
+        print('-----')
+
+    pausa()
+
+    cursor.close()
+    cursor = conexao.execute('SELECT * FROM funcionarios WHERE data=?', (pesq))
+    registros = cursor.fetchall()
+
+    for registro in registros:
+        print('ID..:', registro[0])
+        print('Nome:', registro[1])
+        print('Data:', registro[2])
+        print('Salário:', registro[3])
+        print('-----')
+
+    pausa()
+
+    cursor.close()
+    cursor = conexao.execute('SELECT * FROM funcionarios WHERE salario=?', (pesq))
+    registros = cursor.fetchall()
+
+    for registro in registros:
+        print('ID..:', registro[0])
+        print('Nome:', registro[1])
+        print('Data:', registro[2])
+        print('Salário:', registro[3])
+        print('-----')
+
+    pausa()
+
+    cursor.close()
+
+def mostrar_registro(registro):
+    print('\n====================')
+    print('Registro')
+    print('--------')
+    print('ID..:', registro[0])
+    print('Nome:', registro[1])
+    print('Data:', registro[2])
+    print('Salário:', registro[3])
+    print('====================')
+
+def tabela_vazia(conexao):
+    cursor = conexao.cursor()
+    cursor.execute('SELECT count(*) FROM funcionarios')
+    resultado = cursor.fetchall()
+    cursor.close()
+
+    return resultado[0][0] == 0
+
+def verificar_registro_existe(conexao, id):
+    cursor = conexao.cursor()
+    cursor.execute('SELECT * FROM funcionarios WHERE id=?', (id))
+    resultado = cursor.fetchone()
+    cursor.close()
+
+    return resultado
+
+def pausa():
+    input('\nPressione <ENTER> para continuar')
+
+def listar(conexao):
+    if tabela_vazia(conexao):
+        print('\n*** TABELA VAZIA ***')
+        pausa()
+        return
+
+    print('\n----------------------')
+    print('Listagem dos Registros')
+    print('----------------------\n')
+
+    cursor = conexao.execute('SELECT * from funcionarios')
+    registros = cursor.fetchall()
+
+    for registro in registros:
+        print('ID..:', registro[0])
+        print('Nome:', registro[1])
+        print('Data:', registro[2])
+        print('Salário:', registro[3])
+        print('-----')
+
+    pausa()
+
+    cursor.close()
 
 def menu(conexao):
     opcao = 1
-    while opcao != 5:
-        # if 'SPY_PYTHONPATH' in os.environ:
-        #     get_ipython().magic('clear')
-        # else:
-        #     os.system('cls' if os.name == 'nt' else 'clear')
+    while opcao != 6:
 
         print('--------------')
         print('MENU DE OPÇÕES')
@@ -215,11 +317,11 @@ def menu(conexao):
         print('2. Alterar dados')
         print('3. Excluir dados')
         print('4. Listar dados')
-        print('5. Sair')
+        print('5. Pesquisar dados')
+        print('6. Sair')
 
-        # Tratamento de erros no caso de entrada alfanumérica no input()
         try:
-            opcao = int(input('\nOpção [1-5]: '))
+            opcao = int(input('\nOpção [1-6]: '))
         except ValueError:
             opcao = 0
 
@@ -231,14 +333,15 @@ def menu(conexao):
             excluir(conexao)
         elif opcao == 4:
             listar(conexao)
-        elif opcao != 5:
+        elif opcao == 5:
+            pesquisa(conexao)
+        elif opcao != 6:
             print('Opção inválida, tente novamente')
             sleep(2)
 
         print()
 
     return opcao
-
 
 if __name__ == '__main__':
     conn = None
@@ -251,7 +354,7 @@ if __name__ == '__main__':
             # incluirUmRegistro(conn)
             # incluirVariosRegistros(conn)
 
-            if menu(conn) == 5:
+            if menu(conn) == 6:
                 break
         except OperationalError as e:
             print('Erro operacional:', e)
