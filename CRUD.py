@@ -157,7 +157,7 @@ def pesquisa(conexao):
 
         if opcao == 1:
             
-            pesq = input('\nPesquisar: ')
+            pesq = int(input('\nPesquisar: '))
             
             cursor = conexao.execute('SELECT * FROM funcionarios WHERE id LIKE ?', (pesq))
             registros = cursor.fetchall()
@@ -166,7 +166,7 @@ def pesquisa(conexao):
             
         elif opcao == 2:
             
-            pesq = input('\nPesquisar: ')
+            pesq = str(input('\nPesquisar: '))
             
             cursor = conexao.execute('SELECT * FROM funcionarios WHERE nome LIKE ?', (pesq))
             registros = cursor.fetchall()
