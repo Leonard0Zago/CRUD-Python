@@ -108,6 +108,31 @@ def alterar(conexao):
             conexao.commit()
             cursor.close()
 
+def excluir(conexao):
+    if tabela_vazia(conexao):
+        print('\n*** TABELA VAZIA ***')
+        pausa()
+        return
+
+    id = exibir_cabecalho('alteração')
+    if int(id) == 0:
+        return
+
+    resultado = verificar_registro_existe(conexao, id)
+    if not resultado:
+        print('\nID não existe!')
+        sleep(2)
+    else:
+        mostrar_registro(resultado)
+
+        confirma = input('\nConfirma a exclusão [S/N]? ').upper()
+
+        if confirma == 'S':
+            cursor = conexao.cursor()
+            cursor.execute('DELETE FROM funcionarios WHERE id=?', (id,))
+            conexao.commit()
+            cursor.close()
+
 def listar(conexao):
     if tabela_vazia(conexao):
         print('\n*** TABELA VAZIA ***')
@@ -220,31 +245,6 @@ def pesquisa(conexao):
         print()
 
     return opcao
-
-def excluir(conexao):
-    if tabela_vazia(conexao):
-        print('\n*** TABELA VAZIA ***')
-        pausa()
-        return
-
-    id = exibir_cabecalho('alteração')
-    if int(id) == 0:
-        return
-
-    resultado = verificar_registro_existe(conexao, id)
-    if not resultado:
-        print('\nID não existe!')
-        sleep(2)
-    else:
-        mostrar_registro(resultado)
-
-        confirma = input('\nConfirma a exclusão [S/N]? ').upper()
-
-        if confirma == 'S':
-            cursor = conexao.cursor()
-            cursor.execute('DELETE FROM funcionarios WHERE id=?', (id,))
-            conexao.commit()
-            cursor.close()
 
 def mostrar_registro(registro):
     print('\n====================')
