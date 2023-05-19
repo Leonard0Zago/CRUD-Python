@@ -108,31 +108,30 @@ def alterar(conexao):
             conexao.commit()
             cursor.close()
 
-def excluir(conexao):
+def listar(conexao):
     if tabela_vazia(conexao):
         print('\n*** TABELA VAZIA ***')
         pausa()
         return
 
-    id = exibir_cabecalho('alteração')
-    if int(id) == 0:
-        return
+    print('\n----------------------')
+    print('Listagem dos Registros')
+    print('----------------------\n')
 
-    resultado = verificar_registro_existe(conexao, id)
-    if not resultado:
-        print('\nID não existe!')
-        sleep(2)
-    else:
-        mostrar_registro(resultado)
+    cursor = conexao.execute('SELECT * from funcionarios')
+    registros = cursor.fetchall()
 
-        confirma = input('\nConfirma a exclusão [S/N]? ').upper()
+    for registro in registros:
+        print('ID..:', registro[0])
+        print('Nome:', registro[1])
+        print('Data:', registro[2])
+        print('Salário:', registro[3])
+        print('-----')
 
-        if confirma == 'S':
-            cursor = conexao.cursor()
-            cursor.execute('DELETE FROM funcionarios WHERE id=?', (id,))
-            conexao.commit()
-            cursor.close()
-            
+    pausa()
+
+    cursor.close()
+    
 def pesquisa(conexao):
     
     opcao = 0
@@ -157,38 +156,63 @@ def pesquisa(conexao):
 
         if opcao == 1:
             
-            pesq = int(input('\nPesquisar: '))
+            pesq = input('\nPesquisar: ')
             
-            cursor = conexao.execute('SELECT * FROM funcionarios WHERE id LIKE ?', (pesq))
+            cursor = conexao.execute('SELECT * FROM funcionarios WHERE nome LIKE ?', (f'%{pesq}%'))
             registros = cursor.fetchall()
             cursor.close()
-            print(registros)
+            for registro in registros:
+                print('-----')
+                print('ID..:', registro[0])
+                print('Nome:', registro[1])
+                print('Data:', registro[2])
+                print('Salário:', registro[3])
+                print('-----')
             
         elif opcao == 2:
             
-            pesq = str(input('\nPesquisar: '))
+            pesq = input('\nPesquisar: ')
             
-            cursor = conexao.execute('SELECT * FROM funcionarios WHERE nome LIKE ?', (pesq))
+            cursor = conexao.execute('SELECT * FROM funcionarios WHERE nome LIKE ?', (f'%{pesq}%'))
+
             registros = cursor.fetchall()
             cursor.close()
-            print(registros)
+            for registro in registros:
+                print('-----')
+                print('ID..:', registro[0])
+                print('Nome:', registro[1])
+                print('Data:', registro[2])
+                print('Salário:', registro[3])
+                print('-----')
             
         elif opcao == 3:
             
             pesq = input('\nPesquisar: ')
             
-            cursor = conexao.execute('SELECT * FROM funcionarios WHERE data LIKE ?', (pesq))
+            cursor = conexao.execute('SELECT * FROM funcionarios WHERE data LIKE ?', (f'%{pesq}%'))
             registros = cursor.fetchall()
-            print(registros)
+            for registro in registros:
+                print('-----')
+                print('ID..:', registro[0])
+                print('Nome:', registro[1])
+                print('Data:', registro[2])
+                print('Salário:', registro[3])
+                print('-----')
             
         elif opcao == 4:
             
             pesq = input('\nPesquisar: ')
             
-            cursor = conexao.execute('SELECT * FROM funcionarios WHERE salario LIKE ?', (pesq))
+            cursor = conexao.execute('SELECT * FROM funcionarios WHERE salario LIKE ?', (f'%{pesq}%'))
             registros = cursor.fetchall()
             cursor.close()
-            print(registros)
+            for registro in registros:
+                print('-----')
+                print('ID..:', registro[0])
+                print('Nome:', registro[1])
+                print('Data:', registro[2])
+                print('Salário:', registro[3])
+                print('-----')
             
         elif opcao == 5:
             break
@@ -197,61 +221,30 @@ def pesquisa(conexao):
 
     return opcao
 
+def excluir(conexao):
+    if tabela_vazia(conexao):
+        print('\n*** TABELA VAZIA ***')
+        pausa()
+        return
 
-    pesq = input('\nPesquisar: ')
-    
-    cursor = conexao.execute('SELECT * FROM funcionarios WHERE id LIKE ?', (pesq))
-    registros = cursor.fetchall()
+    id = exibir_cabecalho('alteração')
+    if int(id) == 0:
+        return
 
-    for registro in registros:
-        print('ID..:', registro[0])
-        print('Nome:', registro[1])
-        print('Data:', registro[2])
-        print('Salário:', registro[3])
-        print('-----')
+    resultado = verificar_registro_existe(conexao, id)
+    if not resultado:
+        print('\nID não existe!')
+        sleep(2)
+    else:
+        mostrar_registro(resultado)
 
-    pausa()
+        confirma = input('\nConfirma a exclusão [S/N]? ').upper()
 
-    cursor.close()
-    cursor = conexao.execute('SELECT * FROM funcionarios WHERE nome LIKE ?', (pesq))
-    registros = cursor.fetchall()
-
-    for registro in registros:
-        print('ID..:', registro[0])
-        print('Nome:', registro[1])
-        print('Data:', registro[2])
-        print('Salário:', registro[3])
-        print('-----')
-
-    pausa()
-
-    cursor.close()
-    cursor = conexao.execute('SELECT * FROM funcionarios WHERE data=?', (pesq))
-    registros = cursor.fetchall()
-
-    for registro in registros:
-        print('ID..:', registro[0])
-        print('Nome:', registro[1])
-        print('Data:', registro[2])
-        print('Salário:', registro[3])
-        print('-----')
-
-    pausa()
-
-    cursor.close()
-    cursor = conexao.execute('SELECT * FROM funcionarios WHERE salario=?', (pesq))
-    registros = cursor.fetchall()
-
-    for registro in registros:
-        print('ID..:', registro[0])
-        print('Nome:', registro[1])
-        print('Data:', registro[2])
-        print('Salário:', registro[3])
-        print('-----')
-
-    pausa()
-
-    cursor.close()
+        if confirma == 'S':
+            cursor = conexao.cursor()
+            cursor.execute('DELETE FROM funcionarios WHERE id=?', (id,))
+            conexao.commit()
+            cursor.close()
 
 def mostrar_registro(registro):
     print('\n====================')
@@ -281,30 +274,6 @@ def verificar_registro_existe(conexao, id):
 
 def pausa():
     input('\nPressione <ENTER> para continuar')
-
-def listar(conexao):
-    if tabela_vazia(conexao):
-        print('\n*** TABELA VAZIA ***')
-        pausa()
-        return
-
-    print('\n----------------------')
-    print('Listagem dos Registros')
-    print('----------------------\n')
-
-    cursor = conexao.execute('SELECT * from funcionarios')
-    registros = cursor.fetchall()
-
-    for registro in registros:
-        print('ID..:', registro[0])
-        print('Nome:', registro[1])
-        print('Data:', registro[2])
-        print('Salário:', registro[3])
-        print('-----')
-
-    pausa()
-
-    cursor.close()
 
 def menu(conexao):
     opcao = 1
